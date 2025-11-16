@@ -224,6 +224,13 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check for API Key on initial load
+    if (!process.env.API_KEY) {
+        setError("Configuration Error: API Key is missing. If you are deploying this application online (e.g., on Vercel), you must set the `API_KEY` environment variable in your project's settings on that platform. The application cannot function without it.");
+    }
+  }, []);
+
+  useEffect(() => {
     // Cleanup object URL to prevent memory leaks
     return () => {
         if (downloadUrl) {
@@ -239,11 +246,8 @@ const App: React.FC = () => {
     setError(null);
 
     try {
-        const apiKey = process.env.API_KEY;
-        if (!apiKey) {
-            throw new Error("API Key not found. If you are deploying on a service like Vercel or Netlify, you must set the API_KEY in the project's environment variable settings.");
-        }
-        const ai = new GoogleGenAI({ apiKey });
+        // The API key is checked on load, so we can assert it's present here.
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
         const imagePart = fileToGenerativePart(imageDataUrl, "image/jpeg");
 
         // --- Step 1: Analyze image for person count and gender ---
@@ -414,9 +418,14 @@ const App: React.FC = () => {
                     <p className="max-w-2xl text-lg text-gray-300">
                         Get ready for a fun transformation! We'll snap your picture and create a unique, Indian Navy-themed caricature just for you.
                     </p>
-                    <button onClick={() => setAppState('capturing')} className="mt-4 px-10 py-4 bg-blue-600 text-white font-bold text-xl rounded-full hover:bg-blue-500 transition-transform transform hover:scale-105">
+                    <button 
+                        onClick={() => setAppState('capturing')} 
+                        className="mt-4 px-10 py-4 bg-blue-600 text-white font-bold text-xl rounded-full hover:bg-blue-500 transition-transform transform hover:scale-105 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                        disabled={!!error}
+                    >
                         Start Now
                     </button>
+                    {error && <p className="mt-6 max-w-2xl text-red-400 bg-red-900/50 p-4 rounded-lg text-center font-medium">{error}</p>}
                 </div>
             );
         case 'capturing':
