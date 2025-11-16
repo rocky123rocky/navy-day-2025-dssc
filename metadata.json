@@ -1,0 +1,7 @@
+{
+  "name": "Navy Day 2025 Cartoon Booth",
+  "description": "A fun photo booth application for Navy Day 2025. Capture your photo, see which famous cartoon character you match, apply a cartoon effect, and download the result via QR code.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
