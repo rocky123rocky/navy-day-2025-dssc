@@ -239,7 +239,11 @@ const App: React.FC = () => {
     setError(null);
 
     try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) {
+            throw new Error("API Key not found. If you are deploying on a service like Vercel or Netlify, you must set the API_KEY in the project's environment variable settings.");
+        }
+        const ai = new GoogleGenAI({ apiKey });
         const imagePart = fileToGenerativePart(imageDataUrl, "image/jpeg");
 
         // --- Step 1: Analyze image for person count and gender ---
